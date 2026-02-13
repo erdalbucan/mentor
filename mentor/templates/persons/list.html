@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}People{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>People Management</h2>
+    <a href="/persons/create/" class="btn btn-primary">
+        + Add Person
+    </a>
+</div>
+
+<!-- FILTER BAR -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Search by name or phone">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option>All Roles</option>
+                    <option>Baş Abi</option>
+                    <option>Coordinator</option>
+                    <option>Talebe Abi</option>
+                    <option>Talebe</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100">Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="card">
+    <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th width="160">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Ahmet Yılmaz</td>
+                    <td><span class="badge bg-success">Talebe</span></td>
+                    <td>05551234567</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <a href="/persons/1/" class="btn btn-sm btn-outline-info">Detail</a>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Mehmet Kaya</td>
+                    <td><span class="badge bg-primary">Talebe Abi</span></td>
+                    <td>05559876543</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <a href="/persons/2/" class="btn btn-sm btn-outline-info">Detail</a>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

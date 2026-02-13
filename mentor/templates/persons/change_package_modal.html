@@ -1,0 +1,42 @@
+<div class="modal fade" id="changePackageModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form method="post" action="{% url 'change_package' person.id %}">
+        {% csrf_token %}
+
+        <div class="modal-header">
+          <h5 class="modal-title">Change Package</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label class="form-label">Select New Package</label>
+            <select name="package_id" class="form-select" required>
+              {% for package in available_packages %}
+                <option value="{{ package.id }}">
+                  {{ package.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="alert alert-warning">
+            Changing package will close the current one and keep history.
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-warning">
+            Confirm Change
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+
+    <div class="col-md-3">
+    <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <p class="text-muted mb-1">Total Groups</p>
+                <h3 class="fw-bold">{{ total_groups }}</h3>
+            </div>
+            <div class="bg-primary text-white rounded-circle p-3">
+                <i class="bi bi-people"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="col-md-3">
+        <div class="card text-bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total People</h5>
+                <p class="card-text fs-4">{{ total_people }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Active Packages</h5>
+                <p class="card-text fs-4">{{ total_packages }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Completion Rate</h5>
+                <p class="card-text fs-4">{{ completion_rate }}%</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Create Package{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Create New Package</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form>
+
+            <div class="mb-3">
+                <label class="form-label">Package Name</label>
+                <input type="text" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="3"></textarea>
+            </div>
+
+            <button class="btn btn-primary">Create</button>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Packages{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Package Management</h2>
+    <a href="/packages/create/" class="btn btn-primary">
+        + Create Package
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Package Name</th>
+                    <th>Task Count</th>
+                    <th>Status</th>
+                    <th width="180">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Paket 1</td>
+                    <td>5</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <a href="/packages/1/" class="btn btn-sm btn-outline-info">Detail</a>
+                        <a href="/packages/1/edit/" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

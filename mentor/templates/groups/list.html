@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Groups{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Group Management</h2>
+    <a href="/groups/create/" class="btn btn-primary">
+        + Create Group
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Group Name</th>
+                    <th>Coordinator</th>
+                    <th>Talebe Abi</th>
+                    <th>Talebe</th>
+                    <th>Status</th>
+                    <th width="180">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Gençlik Grubu A</td>
+                    <td>Mehmet Kaya</td>
+                    <td>2</td>
+                    <td>6</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <a href="/groups/1/" class="btn btn-sm btn-outline-info">Detail</a>
+                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

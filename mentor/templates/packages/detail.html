@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Package Detail{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-4">
+    <h2>Paket 1</h2>
+    <a href="/packages/1/edit/" class="btn btn-outline-primary">
+        Edit Package
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <p><strong>Description:</strong> Başlangıç seviyesi görev paketi</p>
+        <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+    </div>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-primary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#addTaskModal">
+        + Add Task
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th width="60">Order</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th width="180">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Günlük Okuma</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editTaskModal">
+                            Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "packages/add_task_modal.html" %}
+{% include "packages/edit_task_modal.html" %}
+
+{% endblock %}

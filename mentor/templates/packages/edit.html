@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Edit Package{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Edit Package</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form>
+
+            <div class="mb-3">
+                <label class="form-label">Package Name</label>
+                <input type="text" class="form-control" value="Paket 1">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="3">
+Başlangıç seviyesi görev paketi
+                </textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-select">
+                    <option selected>Active</option>
+                    <option>Passive</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary">Save Changes</button>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

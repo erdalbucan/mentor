@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+
+body{
+    font-family:system-ui;
+    background:#f4f4f4;
+}
+
+.container{
+    display:flex;
+    gap:20px;
+    padding:20px;
+    overflow-x:auto;
+}
+
+.abi-column{
+    min-width:260px;
+    background:#e9e9e9;
+    border-radius:12px;
+    padding:10px;
+    transition:.2s;
+}
+
+.abi-column.dragging{
+    opacity:.4;
+}
+
+.abi-title{
+    font-weight:700;
+    text-align:center;
+    margin-bottom:10px;
+    cursor:grab;
+}
+
+.talebe{
+    background:white;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:8px;
+    cursor:grab;
+    box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+
+.talebe:active{opacity:.6}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+{% for abi, talebeler in gruplar.items %}
+
+<div class="abi-column"
+     draggable="true"
+     data-abi="{{ abi }}"
+     ondragstart="dragColumn(event)"
+     ondragover="allowDrop(event)"
+     ondrop="dropColumn(event)">
+
+    <div class="abi-title">{{ abi }}</div>
+
+    {% for t in talebeler %}
+    <div class="talebe"
+         draggable="true"
+         data-id="{{ t.id }}"
+         ondragstart="dragTalebe(event)">
+
+        <strong>{{ t.isim }}</strong><br>
+        <small>{{ t.lig|upper }}</small><br>
+        <code>{{ t.wa_id }}</code>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<script>
+
+let draggedTalebe=null;
+let draggedColumn=null;
+
+/* TALEBE */
+
+function dragTalebe(e){
+    draggedTalebe=e.target;
+}
+
+function allowDrop(e){
+    e.preventDefault();
+}
+
+document.querySelectorAll('.abi-column').forEach(col=>{
+    col.addEventListener("drop",function(e){
+        e.preventDefault();
+
+        if(draggedTalebe){
+            this.appendChild(draggedTalebe);
+
+            fetch("/talebe-tasi/",{
+                method:"POST",
+                headers:{
+                    "X-CSRFToken":"{{ csrf_token }}",
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    talebe_id:draggedTalebe.dataset.id,
+                    yeni_abi:this.dataset.abi
+                })
+            });
+
+            draggedTalebe=null;
+        }
+    });
+});
+
+/* ABI */
+
+function dragColumn(e){
+    draggedColumn=e.currentTarget;
+    draggedColumn.classList.add("dragging");
+}
+
+function dropColumn(e){
+    e.preventDefault();
+
+    const container=document.querySelector(".container");
+    const target=e.currentTarget;
+
+    if(draggedColumn && draggedColumn!==target){
+        container.insertBefore(draggedColumn,target);
+    }
+
+    draggedColumn.classList.remove("dragging");
+    draggedColumn=null;
+}
+
+</script>
+
+</body>
+</html>

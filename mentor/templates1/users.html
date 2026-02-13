@@ -1,0 +1,17 @@
+<h1>Kullanıcılar</h1>
+<table border="1">
+    <tr>
+        <th>Key</th>
+        <th>İsim</th>
+        <th>Role</th>
+        <th>Platform</th>
+    </tr>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.key }}</td>
+        <td>{{ u.data.name }}</td>
+        <td>{{ u.data.role }}</td>
+        <td>{{ u.data.platforms.tg }}</td>
+    </tr>
+    {% endfor %}
+</table>

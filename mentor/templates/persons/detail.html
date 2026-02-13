@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Person Detail{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-4">
+    <h2>Ahmet Yılmaz</h2>
+    <button class="btn btn-outline-primary">Edit</button>
+</div>
+
+<!-- BASIC INFO -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <strong>Role:</strong>
+                <span class="badge bg-success">Talebe</span>
+            </div>
+            <div class="col-md-4">
+                <strong>Phone:</strong> 05551234567
+            </div>
+            <div class="col-md-4">
+                <strong>Birth Date:</strong> 01.01.2000
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PACKAGE + PROGRESS -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Active Package: Paket 1</h5>
+
+        <div class="progress mt-3">
+            <div class="progress-bar bg-success" style="width: 60%">
+                60%
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TODO LIST -->
+<div class="card">
+    <div class="card-header bg-light">
+        Task List
+    </div>
+    <div class="card-body table-responsive">
+
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th width="150">Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Günlük Okuma</td>
+                    <td><span class="badge bg-success">Completed</span></td>
+                    <td>
+                        <select class="form-select form-select-sm">
+                            <option>Not Started</option>
+                            <option>In Progress</option>
+                            <option selected>Completed</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Haftalık Rapor</td>
+                    <td><span class="badge bg-warning text-dark">In Progress</span></td>
+                    <td>
+                        <select class="form-select form-select-sm">
+                            <option>Not Started</option>
+                            <option selected>In Progress</option>
+                            <option>Completed</option>
+                        </select>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

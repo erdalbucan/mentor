@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Add Person{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Add New Person</h2>
+
+<div class="card">
+    <div class="card-body">
+
+        <form>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Phone</label>
+                    <input type="text" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Birth Date</label>
+                    <input type="date" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <select class="form-select">
+                    <option>Baş Abi</option>
+                    <option>Coordinator</option>
+                    <option>Talebe Abi</option>
+                    <option>Talebe</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Save
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

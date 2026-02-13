@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Group Detail{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-4">
+    <h2>Gençlik Grubu A</h2>
+<a href="/groups/1/edit/" class="btn btn-outline-primary">
+    Edit Group
+</a></div>
+
+<!-- GROUP INFO -->
+<div class="card mb-4">
+    <div class="card-body">
+        <p><strong>Coordinator:</strong> Mehmet Kaya</p>
+        <p><strong>Description:</strong> Haftalık takip grubu</p>
+        <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+    </div>
+</div>
+
+<!-- ADD MEMBER BUTTON -->
+<div class="mb-3">
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+        + Add Member
+    </button>
+</div>
+
+<!-- TALEBE ABILER -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        Talebe Abiler
+    </div>
+    <div class="card-body table-responsive">
+
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th width="120">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ali Demir</td>
+                    <td>05553334444</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- TALEBELER -->
+<div class="card">
+    <div class="card-header bg-light">
+        Talebeler
+    </div>
+    <div class="card-body table-responsive">
+
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th width="120">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ahmet Yılmaz</td>
+                    <td>05551234567</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% include "groups/add_member_modal.html" %}
+
+{% endblock %}

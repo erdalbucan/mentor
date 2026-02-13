@@ -1,0 +1,21 @@
+<h1>Görevler</h1>
+<form method="post">{% csrf_token %}
+<table border="1">
+<tr>
+    <th>Görev</th>
+    <th>Status</th>
+</tr>
+{% for task in tasks %}
+<tr>
+    <td><input type="text" name="text_{{ forloop.counter0 }}" value="{{ task.text }}"></td>
+    <td>
+        <select name="status_{{ forloop.counter0 }}">
+            <option value="pending" {% if task.status == "pending" %}selected{% endif %}>Pending</option>
+            <option value="done" {% if task.status == "done" %}selected{% endif %}>Done</option>
+        </select>
+    </td>
+</tr>
+{% endfor %}
+</table>
+<button type="submit">Güncelle</button>
+</form>
