@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootcamp Yönetim | Kanban</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Kanban Taşıyıcı */
+        .kanban-container { 
+            display: flex; 
+            gap: 20px; 
+            padding: 20px; 
+            overflow-x: auto; 
+            min-height: 80vh; 
+            align-items: flex-start;
+        }
+
+        /* Sütun Yapısı */
+        .abi-column { 
+            min-width: 300px; 
+            max-width: 300px; 
+            background: #ebedf0; 
+            border-radius: 12px; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: opacity 0.2s;
+        }
+
+        /* Sütun Başlığı (Taşıma Kolu) */
+        .abi-title { 
+            padding: 15px; 
+            font-weight: bold; 
+            color: #444; 
+            border-bottom: 2px solid #ddd; 
+            cursor: move; /* Sütun başlığından taşınır */
+            background: #e2e4e9;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .talebe-list { padding: 10px; min-height: 150px; }
+
+        /* Talebe Kartı */
+        .talebe-card { 
+            background: white; 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            cursor: grab; 
+            transition: transform 0.2s, border-left 0.2s;
+        }
+        .talebe-card:hover { border-left: 4px solid #0d6efd; transform: scale(1.02); }
+        .talebe-card:active { cursor: grabbing; }
+
+        /* Sürükleme Efektleri */
+        .dragging-column { opacity: 0.4; border: 2px dashed #0d6efd; }
+        .dragging-talebe { opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid py-4">
+	<div class="row mb-4">
+	    <div class="col-12">
+	        <div class="card border-0 shadow-sm" style="border-left: 5px solid #0d6efd;">
+	            <div class="card-body">
+	                <div class="d-flex justify-content-between align-items-center mb-2">
+	                    <h5 class="card-title mb-0 fw-bold text-primary">
+	                        <i class="fas fa-info-circle me-2"></i>Sistem İşleyiş Rehberi
+	                    </h5>
+	                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#guideContent">
+	                        Göster / Gizle
+	                    </button>
+	                </div>
+	                <div class="collapse show" id="guideContent">
+	                    <div class="row small text-muted">
+	                        <div class="col-md-4">
+	                            <h6 class="fw-bold text-dark small">Yeni Talebe Kaydı</h6>
+	                            <p>Nasıl Yapılır? Sayfanın üstündeki formu kullanarak talebenin ismini ve WhatsApp ID'sini (358... @c.us) girin. /n Dinamik Seçim: Lig seçenekleri Redis'teki mevcut listelerden otomatik gelir. Bir abiyi sorumlu olarak atayıp "Ekle" butonuna basın.</p>
+	                        </div>
+	                        <div class="col-md-4">
+	                            <h6 class="fw-bold text-dark small">Sürükle-Bırak Yönetimi</h6>
+	                            <p>Talebe Taşıma: Bir talebeyi bir abiden diğerine taşımak için kartı tutup ilgili sütuna bırakın. Bu işlem Redis'te anında güncellenir.
+	                            
+	                            Grup Sıralama: Abi sütunlarını yatayda sıralamak için gri başlık alanından tutup sağa veya sola sürükleyin.
+	                            
+	                            Not: Sütun sıralaması tarayıcı hafızasındadır, sayfa yenilenince varsayılan sıraya döner.</p>
+	                        </div>
+							<div class="col-md-4">
+                            <h6 class="fw-bold text-dark small">Anlık Lig Güncelleme</h6>
+                            	<p>Kartların üzerindeki açılır menüyü kullanarak talebenin ligini (Platin, Gold vb.) anında değiştirebilirsiniz. Sayfayı yenilemenize gerek yoktur..</p>
+                        	</div>
+	                        <div class="col-md-4">
+	                            <h6 class="fw-bold text-dark small">Görev Listesi Yönetimi</h6>
+	                            <p>/tasks_all/ adresine giderek her ligin (config) görevlerini düzenleyebilir, yeni görev ekleyebilir veya silebilirsiniz..</p>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body text-bg-light rounded">
+            <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-user-plus me-2"></i>Yeni Talebe Kaydı</h5>
+            <form action="{% url 'yeni_kullanici_ekle' %}" method="POST" class="row g-2">
+                {% csrf_token %}
+                <div class="col-md-3">
+                    <input type="text" name="name" class="form-control" placeholder="İsim" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="wa_id" class="form-control" placeholder="WA ID (örn: 358...)@c.us" required>
+                </div>
+                <div class="col-md-3">
+                    <select name="abi_adi" class="form-select">
+						{% for id, isim in tum_abiler.items %}
+				         <option value="{{ id }}">{{ isim }}</option>
+						{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="lig" class="form-select">
+                        {% for lig_adi in ligler %}
+                         <option value="{{ lig_adi }}">{{ lig_adi|upper }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="kanban-container" id="main-container">
+        {% for abi, talebeler in gruplar.items %}
+        <div class="abi-column shadow-sm" 
+             draggable="true" 
+             data-abi="{{ abi }}" 
+             onsurukle-column="start"
+             ondragstart="handleColumnDragStart(event)" 
+             ondragover="handleDragOver(event)" 
+             ondrop="handleColumnDrop(event)">
+            
+            <div class="abi-title d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-grip-vertical me-2 text-muted"></i>{{ abi|truncatechars:15 }}</span>
+                <span class="badge bg-primary rounded-pill">{{ talebeler|length }}</span>
+            </div>
+            
+            <div class="talebe-list" ondragover="handleDragOver(event)" ondrop="handleTalebeDrop(event)">
+                {% for t in talebeler %}
+                <div class="talebe-card" draggable="true" data-id="{{ t.id }}" ondragstart="handleTalebeDragStart(event)">
+                    <div class="fw-bold text-dark">{{ t.isim }}</div>
+                    
+                    <select class="form-select form-select-sm mt-1" onchange="updateUserLig('{{ t.id }}', this.value)">
+                        {% for lig_adi in ligler %}
+                        <option value="{{ lig_adi }}" {% if t.lig == lig_adi %}selected{% endif %}>
+                            {{ lig_adi|upper }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <div class="badge bg-light text-dark border w-100 mt-2 text-start">
+                        <i class="fab fa-whatsapp text-success me-1"></i>{{ t.wa_id }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+let draggedTalebeId = null;
+let draggedColumnElement = null;
+
+// --- GENEL SÜRÜKLEME AYARLARI ---
+function handleDragOver(e) {
+    e.preventDefault(); // Drop işlemine izin ver
+}
+
+// --- TALEBE TAŞIMA MANTIĞI (Redis ile Senkron) ---
+function handleTalebeDragStart(e) {
+    draggedTalebeId = e.target.dataset.id;
+    e.target.classList.add('dragging-talebe');
+    e.stopPropagation(); // Sütun sürüklemesini tetiklemesin
+}
+
+function handleTalebeDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const targetList = e.target.closest('.talebe-list');
+    const targetColumn = e.target.closest('.abi-column');
+    const yeniAbi = targetColumn.dataset.abi;
+    const card = document.querySelector(`[data-id="${draggedTalebeId}"]`);
+    
+    if (card && targetList) {
+        card.classList.remove('dragging-talebe');
+        targetList.appendChild(card);
+
+        // Redis Güncellemesi için Backend'e gönder
+        fetch("/talebe-tasi/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                talebe_id: draggedTalebeId,
+                yeni_abi: yeniAbi
+            })
+        }).then(res => console.log("Talebe yeri güncellendi."));
+    }
+    draggedTalebeId = null;
+}
+
+// --- SÜTUN TAŞIMA MANTIĞI (Sadece Browser Hafızası) ---
+function handleColumnDragStart(e) {
+    if (e.target.classList.contains('abi-column')) {
+        draggedColumnElement = e.target;
+        e.target.classList.add('dragging-column');
+        e.dataTransfer.setData("text/plain", "column"); // Sürüklenen tipini belirle
+    }
+}
+
+function updateUserLig(talebeId, yeniLig) {
+    fetch("/lig-guncelle/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            talebe_id: talebeId,
+            yeni_lig: yeniLig
+        })
+    }).then(res => {
+        if(res.ok) {
+            // İstersen burada ufak bir "Başarılı" bildirimi gösterebilirsin
+            console.log("Lig başarıyla güncellendi.");
+        }
+    });
+}
+
+function handleColumnDrop(e) {
+    e.preventDefault();
+    const targetColumn = e.target.closest('.abi-column');
+    const container = document.getElementById('main-container');
+
+    if (draggedColumnElement && targetColumn && draggedColumnElement !== targetColumn) {
+        const allColumns = Array.from(container.children);
+        const draggedIdx = allColumns.indexOf(draggedColumnElement);
+        const targetIdx = allColumns.indexOf(targetColumn);
+
+        // Sağa mı sola mı taşınıyor?
+        if (draggedIdx < targetIdx) {
+            container.insertBefore(draggedColumnElement, targetColumn.nextSibling);
+        } else {
+            container.insertBefore(draggedColumnElement, targetColumn);
+        }
+    }
+    
+    if (draggedColumnElement) {
+        draggedColumnElement.classList.remove('dragging-column');
+        draggedColumnElement = null;
+    }
+}
+
+// Sürükleme bittiğinde temizlik (İptal durumunda)
+document.addEventListener("dragend", function(e) {
+    if (draggedColumnElement) draggedColumnElement.classList.remove('dragging-column');
+    if (draggedTalebeId) {
+        const card = document.querySelector(`[data-id="${draggedTalebeId}"]`);
+        if(card) card.classList.remove('dragging-talebe');
+    }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

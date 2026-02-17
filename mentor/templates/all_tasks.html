@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görev Yönetim Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border: none; border-radius: 12px; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .lig-header { background: linear-gradient(45deg, #4e73df, #224abe); color: white; border-radius: 12px 12px 0 0; }
+        .btn-update { border-radius: 20px; padding: 8px 25px; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="card shadow-sm mb-5 border-0" style="border-radius: 15px;">
+        <div class="card-body bg-light" style="border-radius: 15px;">
+            <h5 class="fw-bold mb-3"><i class="fas fa-plus-circle me-2 text-primary"></i>Yeni Görev Grubu Oluştur</h5>
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-8">
+                    <input type="text" name="new_league_name" class="form-control" placeholder="Örn: Elmas, Platin, Yeni Başlayanlar..." required>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Grubu Tanımla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h2 class="fw-bold mb-4">Görev Grupları</h2>
+
+    <div class="accordion shadow-sm" id="leaguesAccordion">
+        {% for league, info in leagues_data.items %}
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed fw-bold text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+                    <i class="fas fa-layer-group me-2 text-primary"></i> {{ league }} Ligi
+                </button>
+            </h2>
+            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#leaguesAccordion">
+                <div class="accordion-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="league_key" value="{{ info.key }}">
+                        
+                        <div class="list-group mb-3">
+                            {% for task in info.tasks %}
+                            <div class="input-group mb-2 shadow-sm">
+                                <span class="input-group-text bg-white border-end-0">{{ forloop.counter }}</span>
+                                <input type="text" name="text_{{ info.key }}_{{ forloop.counter0 }}" class="form-control border-start-0" value="{{ task.text }}">
+                                <button type="submit" name="action" value="delete_task_{{ forloop.counter0 }}" class="btn btn-outline-danger border-start-0">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+    
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" name="action" value="add_task" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                <i class="fas fa-plus me-1"></i> Yeni Görev Ekle
+                            </button>
+                            
+                            <button type="submit" name="action" value="save" class="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm">
+                                <i class="fas fa-save me-1"></i> Tümünü Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

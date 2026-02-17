@@ -1,150 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-<meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootcamp Yönetim</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .kanban-container { display: flex; gap: 20px; padding: 20px; overflow-x: auto; min-height: 80vh; align-items: flex-start; }
+        
+        .abi-column { 
+            min-width: 300px; max-width: 300px; background: #ebedf0; 
+            border-radius: 12px; display: flex; flex-direction: column; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: opacity 0.2s;
+        }
+        
+        .abi-title { 
+            padding: 15px; font-weight: bold; color: #444; border-bottom: 2px solid #ddd; 
+            cursor: grab; background: #dee2e6; border-radius: 12px 12px 0 0;
+        }
+        .abi-title:active { cursor: grabbing; }
 
-<style>
-
-body{
-    font-family:system-ui;
-    background:#f4f4f4;
-}
-
-.container{
-    display:flex;
-    gap:20px;
-    padding:20px;
-    overflow-x:auto;
-}
-
-.abi-column{
-    min-width:260px;
-    background:#e9e9e9;
-    border-radius:12px;
-    padding:10px;
-    transition:.2s;
-}
-
-.abi-column.dragging{
-    opacity:.4;
-}
-
-.abi-title{
-    font-weight:700;
-    text-align:center;
-    margin-bottom:10px;
-    cursor:grab;
-}
-
-.talebe{
-    background:white;
-    border-radius:8px;
-    padding:10px;
-    margin-bottom:8px;
-    cursor:grab;
-    box-shadow:0 2px 4px rgba(0,0,0,.2);
-}
-
-.talebe:active{opacity:.6}
-
-</style>
+        .talebe-list { padding: 10px; min-height: 150px; }
+        
+        .talebe-card { 
+            background: white; border-radius: 8px; padding: 12px; margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: grab; transition: 0.2s;
+        }
+        .talebe-card:hover { border-left: 4px solid #0d6efd; transform: scale(1.01); }
+        
+        /* Sürükleme Efektleri */
+        .dragging-column { opacity: 0.4; border: 2px dashed #0d6efd; }
+        .dragging-talebe { opacity: 0.5; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-
-{% for abi, talebeler in gruplar.items %}
-
-<div class="abi-column"
-     draggable="true"
-     data-abi="{{ abi }}"
-     ondragstart="dragColumn(event)"
-     ondragover="allowDrop(event)"
-     ondrop="dropColumn(event)">
-
-    <div class="abi-title">{{ abi }}</div>
-
-    {% for t in talebeler %}
-    <div class="talebe"
-         draggable="true"
-         data-id="{{ t.id }}"
-         ondragstart="dragTalebe(event)">
-
-        <strong>{{ t.isim }}</strong><br>
-        <small>{{ t.lig|upper }}</small><br>
-        <code>{{ t.wa_id }}</code>
-
+<div class="container-fluid py-4">
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Yeni Talebe Kaydı</h5>
+            <form action="{% url 'yeni_kullanici_ekle' %}" method="POST" class="row g-2">
+                {% csrf_token %}
+                <div class="col-md-3"><input type="text" name="name" class="form-control" placeholder="İsim" required></div>
+                <div class="col-md-3"><input type="text" name="wa_id" class="form-control" placeholder="WA ID" required></div>
+                <div class="col-md-3">
+                    <select name="abi_adi" class="form-select">
+                        {% for abi_id, abi_isim in tum_abiler.items %}<option value="{{ abi_id }}">{{ abi_isim }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="lig" class="form-select">
+                        {% for lig in ligler %}<option value="{{ lig }}">{{ lig|upper }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Ekle</button></div>
+            </form>
+        </div>
     </div>
-    {% endfor %}
 
-</div>
-
-{% endfor %}
-
+    <div class="kanban-container" id="kanbanBoard">
+        {% for abi, talebeler in gruplar.items %}
+        <div class="abi-column" 
+             draggable="true" 
+             data-abi="{{ abi }}" 
+             oncoll-dragstart="handleColDragStart(event)"
+             ondragstart="handleColDragStart(event)" 
+             ondragover="allowDrop(event)" 
+             ondrop="handleColDrop(event)">
+            
+            <div class="abi-title d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-grip-vertical me-2 text-muted"></i>{{ abi }}</span>
+                <span class="badge bg-secondary rounded-pill">{{ talebeler|length }}</span>
+            </div>
+            
+            <div class="talebe-list" ondragover="allowDrop(event)" ondrop="handleTalebeDrop(event)">
+                {% for t in talebeler %}
+                <div class="talebe-card" 
+                     draggable="true" 
+                     data-id="{{ t.id }}" 
+                     ondragstart="handleTalebeDragStart(event)">
+                    <div class="fw-bold text-dark">{{ t.isim }}</div>
+                    <div class="small text-muted mb-1">{{ t.lig|upper }}</div>
+                    <div class="badge bg-light text-dark border w-100 text-start" style="font-size: 0.7rem;">
+                        <i class="fab fa-whatsapp text-success me-1"></i>{{ t.wa_id }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 <script>
+let draggedTalebeId = null;
+let draggedColumn = null;
 
-let draggedTalebe=null;
-let draggedColumn=null;
-
-/* TALEBE */
-
-function dragTalebe(e){
-    draggedTalebe=e.target;
-}
-
-function allowDrop(e){
+function allowDrop(e) {
     e.preventDefault();
 }
 
-document.querySelectorAll('.abi-column').forEach(col=>{
-    col.addEventListener("drop",function(e){
-        e.preventDefault();
-
-        if(draggedTalebe){
-            this.appendChild(draggedTalebe);
-
-            fetch("/talebe-tasi/",{
-                method:"POST",
-                headers:{
-                    "X-CSRFToken":"{{ csrf_token }}",
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    talebe_id:draggedTalebe.dataset.id,
-                    yeni_abi:this.dataset.abi
-                })
-            });
-
-            draggedTalebe=null;
-        }
-    });
-});
-
-/* ABI */
-
-function dragColumn(e){
-    draggedColumn=e.currentTarget;
-    draggedColumn.classList.add("dragging");
+// --- TALEBE TAŞIMA ---
+function handleTalebeDragStart(e) {
+    draggedTalebeId = e.target.dataset.id;
+    e.dataTransfer.setData("type", "talebe");
+    e.target.classList.add('dragging-talebe');
+    e.stopPropagation(); // Üstteki sütun drag olayını tetiklemesin
 }
 
-function dropColumn(e){
+function handleTalebeDrop(e) {
     e.preventDefault();
+    const type = e.dataTransfer.getData("type");
+    if (type !== "talebe") return; // Sütun buraya atılamaz!
 
-    const container=document.querySelector(".container");
-    const target=e.currentTarget;
+    const targetList = e.target.closest('.talebe-list');
+    const targetColumn = e.target.closest('.abi-column');
+    const yeniAbiId = targetColumn.dataset.abi; // Redis'e gidecek ID
+    const card = document.querySelector(`[data-id="${draggedTalebeId}"]`);
+    
+    if (card && targetList) {
+        card.classList.remove('dragging-talebe');
+        targetList.appendChild(card);
 
-    if(draggedColumn && draggedColumn!==target){
-        container.insertBefore(draggedColumn,target);
+        // Backend güncellemesi (Mevcut Fetch kodun)
+        fetch("/talebe-tasi/", {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}", "Content-Type": "application/json" },
+            body: JSON.stringify({ talebe_id: draggedTalebeId, yeni_abi: yeniAbiId })
+        });
     }
-
-    draggedColumn.classList.remove("dragging");
-    draggedColumn=null;
 }
 
-</script>
+// --- GRUP (SÜTUN) TAŞIMA ---
+function handleColDragStart(e) {
+    if (e.target.classList.contains('abi-column')) {
+        draggedColumn = e.target;
+        e.dataTransfer.setData("type", "column");
+        e.target.classList.add('dragging-column');
+    }
+}
 
+function handleColDrop(e) {
+    e.preventDefault();
+    const type = e.dataTransfer.getData("type");
+    if (type !== "column") return; // Talebe kartı sütun sıralamasını bozamaz!
+
+    const targetColumn = e.target.closest('.abi-column');
+    const container = document.getElementById('kanbanBoard');
+
+    if (draggedColumn && targetColumn && draggedColumn !== targetColumn) {
+        const allCols = Array.from(container.children);
+        const draggedIdx = allCols.indexOf(draggedColumn);
+        const targetIdx = allCols.indexOf(targetColumn);
+
+        if (draggedIdx < targetIdx) {
+            container.insertBefore(draggedColumn, targetColumn.nextSibling);
+        } else {
+            container.insertBefore(draggedColumn, targetColumn);
+        }
+    }
+    if (draggedColumn) draggedColumn.classList.remove('dragging-column');
+}
+
+document.addEventListener("dragend", (e) => {
+    if (draggedColumn) draggedColumn.classList.remove('dragging-column');
+    if (draggedTalebeId) {
+        const t = document.querySelector(`[data-id="${draggedTalebeId}"]`);
+        if (t) t.classList.remove('dragging-talebe');
+    }
+});
+</script>
 </body>
 </html>
